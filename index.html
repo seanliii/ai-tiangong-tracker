@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天工AI商业化进展追踪器 | 全球AI商业化标杆</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+header{text-align:center;padding:40px 20px 20px;border-bottom:1px solid rgba(148,163,184,0.1)}
+header h1{font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+header .subtitle{font-size:1.1rem;color:#94a3b8;margin-bottom:16px}
+header .meta{font-size:0.85rem;color:#64748b;display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+header .meta span{display:flex;align-items:center;gap:6px}
+.stats-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin:24px 0}
+.stat-card{background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.1));border:1px solid rgba(148,163,184,0.15);border-radius:12px;padding:20px;text-align:center;transition:transform 0.2s,box-shadow 0.2s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(59,130,246,0.15)}
+.stat-card .stat-value{font-size:1.8rem;font-weight:800;color:#3b82f6}
+.stat-card .stat-label{font-size:0.8rem;color:#94a3b8;margin-top:4px;text-transform:uppercase;letter-spacing:0.5px}
+.stat-card .stat-delta{font-size:0.75rem;color:#22c55e;margin-top:4px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:20px 0;padding:16px;background:rgba(30,41,59,0.6);border-radius:12px;border:1px solid rgba(148,163,184,0.1)}
+.controls-left{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.controls-right{display:flex;gap:10px;align-items:center}
+.filter-btn{padding:8px 16px;border-radius:8px;border:1px solid rgba(148,163,184,0.2);background:transparent;color:#94a3b8;cursor:pointer;font-size:0.85rem;transition:all 0.2s}
+.filter-btn:hover{background:rgba(59,130,246,0.1);color:#60a5fa;border-color:rgba(59,130,246,0.3)}
+.filter-btn.active{background:rgba(59,130,246,0.2);color:#60a5fa;border-color:rgba(59,130,246,0.5)}
+.search-input{padding:8px 14px;border-radius:8px;border:1px solid rgba(148,163,184,0.2);background:rgba(15,23,42,0.8);color:#e2e8f0;font-size:0.85rem;width:220px}
+.search-input:focus{outline:none;border-color:#3b82f6}
+.view-btn{padding:8px 14px;border-radius:8px;border:1px solid rgba(148,163,184,0.2);background:transparent;color:#94a3b8;cursor:pointer;font-size:0.85rem;transition:all 0.2s}
+.view-btn:hover{background:rgba(59,130,246,0.1);color:#60a5fa}
+.view-btn.active{background:rgba(59,130,246,0.2);color:#60a5fa;border-color:rgba(59,130,246,0.5)}
+.content{min-height:400px}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px}
+.card{background:rgba(30,41,59,0.6);border:1px solid rgba(148,163,184,0.1);border-radius:12px;padding:20px;cursor:pointer;transition:all 0.2s}
+.card:hover{border-color:rgba(59,130,246,0.4);transform:translateY(-2px);box-shadow:0 8px 24px rgba(59,130,246,0.1)}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.card-title{font-size:1.05rem;font-weight:600;color:#f1f5f9}
+.card-badge{padding:4px 10px;border-radius:6px;font-size:0.75rem;font-weight:500}
+.badge-milestone{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
+.badge-product{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff}
+.badge-tech{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff}
+.badge-finance{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.badge-impact{background:linear-gradient(135deg,#ec4899,#db2777);color:#fff}
+.badge-strategy{background:linear-gradient(135deg,#06b6d4,#0891b2);color:#fff}
+.card-date{font-size:0.8rem;color:#64748b;margin-bottom:8px}
+.card-desc{color:#94a3b8;font-size:0.9rem;line-height:1.5;margin-bottom:12px}
+.card-footer{display:flex;gap:8px;flex-wrap:wrap}
+.card-tag{padding:3px 10px;border-radius:6px;background:rgba(15,23,42,0.6);color:#64748b;font-size:0.75rem;border:1px solid rgba(148,163,184,0.1)}
+.timeline-view{display:none}
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#3b82f6,#8b5cf6)}
+.timeline-item{position:relative;margin-bottom:24px;padding-left:20px}
+.timeline-item::before{content:'';position:absolute;left:-24px;top:4px;width:12px;height:12px;border-radius:50%;background:#3b82f6;border:2px solid #0f172a}
+.timeline-date{font-size:0.8rem;color:#64748b;margin-bottom:4px}
+.timeline-title{font-size:1rem;font-weight:600;color:#f1f5f9;margin-bottom:6px}
+.timeline-desc{color:#94a3b8;font-size:0.9rem;line-height:1.5}
+.table-view{display:none;width:100%}
+.table-view table{width:100%;border-collapse:collapse;font-size:0.9rem}
+.table-view th{padding:12px 16px;text-align:left;background:rgba(30,41,59,0.8);color:#94a3b8;font-weight:600;border-bottom:1px solid rgba(148,163,184,0.2)}
+.table-view td{padding:12px 16px;border-bottom:1px solid rgba(148,163,184,0.1);color:#e2e8f0}
+.table-view tr:hover td{background:rgba(59,130,246,0.05)}
+.table-badge{padding:3px 10px;border-radius:6px;font-size:0.75rem;font-weight:500}
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:#1e293b;border:1px solid rgba(148,163,184,0.2);border-radius:16px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.modal-header{padding:20px 24px;border-bottom:1px solid rgba(148,163,184,0.1);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:1.2rem;font-weight:700;color:#f1f5f9}
+.modal-close{background:none;border:none;color:#64748b;font-size:1.5rem;cursor:pointer;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:all 0.2s}
+.modal-close:hover{background:rgba(148,163,184,0.1);color:#e2e8f0}
+.modal-body{padding:24px}
+.modal-section{margin-bottom:20px}
+.modal-section-title{font-size:0.9rem;font-weight:600;color:#3b82f6;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px}
+.modal-section-content{color:#94a3b8;line-height:1.7;font-size:0.9rem}
+.modal-section-content ul{list-style:none;padding:0}
+.modal-section-content li{padding:6px 0;padding-left:20px;position:relative}
+.modal-section-content li::before{content:'▸';position:absolute;left:0;color:#3b82f6}
+.modal-link{display:inline-flex;align-items:center;gap:6px;color:#3b82f6;text-decoration:none;font-size:0.85rem;margin-top:8px;transition:color 0.2s}
+.modal-link:hover{color:#60a5fa}
+.empty-state{text-align:center;padding:60px 20px;color:#64748b}
+.empty-state-icon{font-size:3rem;margin-bottom:16px}
+footer{text-align:center;padding:24px;color:#64748b;font-size:0.8rem;border-top:1px solid rgba(148,163,184,0.1);margin-top:40px}
+@media(max-width:768px){header h1{font-size:1.6rem}.card-grid{grid-template-columns:1fr}.controls{flex-direction:column;align-items:stretch}.controls-left{justify-content:center}.controls-right{justify-content:center}.search-input{width:100%}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>天工AI商业化进展追踪器</h1>
+<div class="subtitle">昆仑万维旗下天工AI — 从模型到收入的完整闭环</div>
+<div class="meta">
+<span>ARR突破 $8亿</span>
+<span>目标：中国首个非BAT 10亿美元ARR AI公司</span>
+<span>数据截至 2026-07-05</span>
+</div>
+</header>
+<div class="stats-panel" id="statsPanel"></div>
+<div class="controls">
+<div class="controls-left">
+<button class="filter-btn active" data-filter="all" onclick="filterCategory('all')">全部</button>
+<button class="filter-btn" data-filter="milestone" onclick="filterCategory('milestone')">商业化里程碑</button>
+<button class="filter-btn" data-filter="product" onclick="filterCategory('product')">产品矩阵</button>
+<button class="filter-btn" data-filter="tech" onclick="filterCategory('tech')">技术突破</button>
+<button class="filter-btn" data-filter="finance" onclick="filterCategory('finance')">市场表现</button>
+<button class="filter-btn" data-filter="strategy" onclick="filterCategory('strategy')">战略动态</button>
+<button class="filter-btn" data-filter="impact" onclick="filterCategory('impact')">行业影响</button>
+</div>
+<div class="controls-right">
+<input type="text" class="search-input" id="searchInput" placeholder="搜索关键词..." oninput="handleSearch(this.value)">
+<button class="view-btn active" data-view="card" onclick="switchView('card')">卡片</button>
+<button class="view-btn" data-view="timeline" onclick="switchView('timeline')">时间线</button>
+<button class="view-btn" data-view="table" onclick="switchView('table')">表格</button>
+</div>
+</div>
+<div class="content" id="content"></div>
+</div>
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+<div class="modal" onclick="event.stopPropagation()">
+<div class="modal-header">
+<div class="modal-title" id="modalTitle"></div>
+<button class="modal-close" onclick="closeModal()">&times;</button>
+</div>
+<div class="modal-body" id="modalBody"></div>
+</div>
+</div>
+<footer>
+<div>天工AI商业化进展追踪器 | 数据来源：昆仑万维官方公告、证券时报、界面新闻、东方财富等</div>
+<div style="margin-top:4px">最后更新：2026-07-05 | 小蓝虾 构建</div>
+</footer>
+<script>
+const tiangongData=[
+{id:1,title:"ARR突破8亿美元",date:"2026-07-02",category:"milestone",desc:"昆仑万维宣布旗下天工AI在2026年第二季度实现历史性突破，AI Native模型与产品业务年度经常性收入（ARR）突破8亿美元大关。",tags:["ARR","商业化","里程碑"],keyInfo:["AI短剧平台ARR超过7亿美元","AI工具业务ARR突破1亿美元","自2025年Q4周亚辉接任CEO以来ARR快速增长","有望成为中国AI产业首个非BAT阵营10亿美元ARR企业"],highlights:["全球AI产业从技术竞赛迈向商业竞赛的代表性案例","核心业务连续多季度保持双位数QoQ增长","从模型能力到产品矩阵到商业收入的完整闭环"],sources:[{title:"证券时报",url:"https://www.stcn.com/article/detail/3994515.html"},{title:"界面新闻",url:"https://www.jiemian.com/article/14688869.html"},{title:"央广网",url:"https://www.cnr.cn/tech/techph/20260702/t20260702_527686906.shtml"}]},
+{id:2,title:"DramaWave AI原生化转型",date:"2026-07-02",category:"product",desc:"天工AI旗下短剧平台DramaWave正式完成AI原生化转型，目前平台超过80%的新增发布内容由AI生成。",tags:["DramaWave","短剧","AI原生"],keyInfo:["DramaWave 6月登顶全球海外短剧付费榜","Q2用户订阅收入约24.1亿元","FreeReels广告收入约5.92亿元","AI自制大幅压低单部成本，投放效率大幅提升"],highlights:["引领全球短剧行业正式进入AI原生内容时代","付费订阅+免费广告双模式并行","专业机构预测2026全年短剧营收超110亿元"],sources:[{title:"网易",url:"https://m.163.com/money/article/L0RCMT1S00258105.html"},{title:"ZAKER",url:"http://www.myzaker.com/article/6a4813f98e9f09068d06fdf1"},{title:"新浪科技",url:"https://baijiahao.baidu.com/s?id=1869582874931889485"}]},
+{id:3,title:"SkyReels视频生成大模型",date:"2026-07-02",category:"tech",desc:"视频生成大模型SkyReels先后登顶国际权威榜单，在视频生成核心赛道跻身全球第一梯队。",tags:["SkyReels","视频生成","大模型"],keyInfo:["天工AI三大基座模型之一","登顶国际权威榜单","覆盖内容生产核心赛道"],highlights:["视频生成领域的全球领先技术","支撑DramaWave短剧平台的AI内容生产","从模型到产品到收入的完整技术闭环"],sources:[{title:"百家号",url:"https://baijiahao.baidu.com/s?id=1869589374044717384"},{title:"新浪科技",url:"https://baijiahao.baidu.com/s?id=1869582874931889485"}]},
+{id:4,title:"Mureka音乐生成大模型",date:"2026-07-02",category:"tech",desc:"音乐生成大模型Mureka先后登顶国际权威榜单，在音乐生成核心赛道跻身全球第一梯队。",tags:["Mureka","音乐生成","大模型"],keyInfo:["天工AI三大基座模型之一","登顶国际权威榜单","覆盖创作工具核心赛道"],highlights:["音乐生成领域的全球领先技术","与SkyReels、MatrixGame形成完整内容生产矩阵","支撑Mureka产品线的核心技术引擎"],sources:[{title:"百家号",url:"https://baijiahao.baidu.com/s?id=1869589374044717384"},{title:"央广网",url:"https://www.cnr.cn/tech/techph/20260702/t20260702_527686906.shtml"}]},
+{id:5,title:"MatrixGame游戏世界模型",date:"2026-07-02",category:"tech",desc:"游戏世界模型MatrixGame先后登顶国际权威榜单，在游戏AI核心赛道跻身全球第一梯队。",tags:["MatrixGame","游戏AI","世界模型"],keyInfo:["天工AI三大基座模型之一","登顶国际权威榜单","覆盖游戏世界构建核心赛道"],highlights:["游戏世界模型的全球领先技术","支撑游戏世界构建的AI原生能力","与SkyReels、Mureka形成三大基座模型矩阵"],sources:[{title:"百家号",url:"https://baijiahao.baidu.com/s?id=1869589374044717384"},{title:"大洋网",url:"https://news.dayoo.com/finance/202607/03/171077_54975713.htm"}]},
+{id:6,title:"股价大涨12.19%",date:"2026-07-02",category:"finance",desc:"昆仑万维A股报收45.55元，单日大涨12.19%（+4.95元），带动AI应用、ChatGPT板块全线走强。",tags:["股价","昆仑万维","AI应用"],keyInfo:["A股报收45.55元，单日大涨12.19%","主力资金净流入8.67亿元","板块主力资金合计净流入超19亿元","带动AI应用板块全线走强"],highlights:["市场对天工AI商业化兑现的强烈认可","AI应用端投资情绪回暖信号","从概念炒作到业绩兑现的关键转折"],sources:[{title:"东方财富",url:"https://finance.eastmoney.com/a/202607023792053869.html"},{title:"腾讯新闻",url:"https://news.qq.com/rain/a/20260702A08ERI00"},{title:"和讯网",url:"https://tech.hexun.com/2026-07-02/224503393.html"}]},
+{id:7,title:"Opera浏览器生态协同",date:"2026-07-02",category:"product",desc:"Opera浏览器2.89亿MAU为天工AI提供免费分发入口，内置AI搜索、AI写作、AI短剧入口，形成内部流量闭环。",tags:["Opera","浏览器","流量生态"],keyInfo:["Opera 2.89亿月活跃用户","Q2营收约15.57亿元，占比约29%","为天工AI提供免费分发入口","内置AI搜索、AI写作、AI短剧入口"],highlights:["流量底座+AI模型基座+AI变现平台三层架构","海外收入占比超94%","Opera与天工AI形成内部流量闭环"],sources:[{title:"ZAKER",url:"http://www.myzaker.com/article/6a4813f98e9f09068d06fdf1"},{title:"百家号",url:"https://baijiahao.baidu.com/s?id=1869593462984319663"}]},
+{id:8,title:"周亚辉接任天工AI CEO",date:"2025-10",category:"strategy",desc:"自2025年第四季度周亚辉接任天工AI CEO以来，公司AI Native业务ARR实现快速增长，从0到8亿美元仅用约2年。",tags:["周亚辉","CEO","战略"],keyInfo:["2025年Q4接任天工AI CEO","推动All in AI战略落地","ARR从0到8亿美元仅用约2年"],highlights:["技术背景深厚的AI行业领军人物","坚定执行All in AGI与AIGC战略","带领天工AI完成从模型到收入的完整闭环"],sources:[{title:"百家号",url:"https://baijiahao.baidu.com/s?id=1869589374044717384"},{title:"新浪科技",url:"https://baijiahao.baidu.com/s?id=1869582874931889485"}]},
+{id:9,title:"收入结构：短剧成第一大板块",date:"2026-07-02",category:"finance",desc:"Q2收入结构显示短剧板块已成为昆仑万维第一大收入来源，AI驱动商业化转型成效显著。",tags:["收入结构","短剧","商业化"],keyInfo:["短剧板块Q2约30亿元，占比约58%","Opera浏览器Q2约15.57亿元，占比约29%","天工AI全栈Q2约5.45亿元，占比约10%","传统衰退业务Q2约2.16亿元，占比约3%"],highlights:["短剧板块收入超过往年公司整体营收","AI降本增效驱动商业模式重构","从传统业务向AI原生业务的结构性转型"],sources:[{title:"ZAKER",url:"http://www.myzaker.com/article/6a4813f98e9f09068d06fdf1"},{title:"东方财富",url:"https://finance.eastmoney.com/a/202607033793509262.html"}]},
+{id:10,title:"All in AI战略宣言",date:"2026-07-02",category:"strategy",desc:"周亚辉表示：AI正在从技术革命进入产业革命阶段，从实验室走向真实用户，从模型走向收入。",tags:["战略","All in AI","产业革命"],keyInfo:["AI从技术革命进入产业革命阶段","从实验室走向真实用户，从模型走向收入","All in AI不一定成功，但不All in AI一定会被时代淘汰"],highlights:["清晰定义AI产业发展三阶段：技术革命→产业革命→收入兑现","对全球AI产业的趋势判断具有前瞻性","代表了中国AI企业从跟随到引领的转变"],sources:[{title:"新浪科技",url:"https://baijiahao.baidu.com/s?id=1869582874931889485"},{title:"央广网",url:"https://www.cnr.cn/tech/techph/20260702/t20260702_527686906.shtml"},{title:"东方财富",url:"https://finance.eastmoney.com/a/202607033793509262.html"}]},
+{id:11,title:"AI短剧革命：单集成本降99%",date:"2026-07-02",category:"impact",desc:"AI漫剧单集成本从万元降至几十元，降幅超99%，2026年上半年AI漫剧占短剧市场96.3%上线份额。",tags:["AI短剧","成本革命","行业变革"],keyInfo:["单集成本从3-8万元降至几十元，降幅超99%","制作周期从45天压缩至72小时","2026上半年AI漫剧占短剧市场96.3%份额","头部AI团队月产能突破100部"],highlights:["对传统真人短剧形成产业级降维打击","浙江头部制作公司已裁撤三个真人拍摄团队","AI漫剧上线5个月沉淀7万部作品"],sources:[{title:"新浪网",url:"http://k.sina.com.cn/article_7879776328_1d5abd84806801up3o.html"},{title:"新浪乐迷公社",url:"http://k.sina.com.cn/article_7879776328_1d5abd84806801ugqk.html"}]},
+{id:12,title:"向10亿美元ARR迈进",date:"2026-07-02",category:"milestone",desc:"天工AI已成为全球AI商业化进程最快的企业之一，有望率先实现中国AI产业历史上首个BAT之外10亿美元ARR里程碑。",tags:["10亿美元","ARR","里程碑"],keyInfo:["ARR 8亿美元并持续向10亿美元迈进","全球AI商业化进程最快的企业之一","中国AI产业首个非BAT 10亿美元ARR目标"],highlights:["标志着中国AI企业商业化能力的全球竞争力","从融资驱动向收入驱动的商业模式转型","为AI行业树立商业化标杆"],sources:[{title:"百家号",url:"https://baijiahao.baidu.com/s?id=1869589374044717384"},{title:"网易",url:"https://www.163.com/tech/article/L0RDJDOP00098IEO.html"},{title:"上海证券报",url:"https://baijiahao.baidu.com/s?id=1869593462984319663"}]}
+];
+const categories={all:"全部",milestone:"商业化里程碑",product:"产品矩阵",tech:"技术突破",finance:"市场表现",strategy:"战略动态",impact:"行业影响"};
+const categoryColors={milestone:"badge-milestone",product:"badge-product",tech:"badge-tech",finance:"badge-finance",strategy:"badge-strategy",impact:"badge-impact"};
+let currentFilter="all",currentView="card",searchQuery="";
+function init(){renderStats();renderContent();bindEvents()}
+function renderStats(){const stats=[{value:"$8亿",label:"ARR总额",delta:"Q2突破"},{value:"$7亿",label:"短剧ARR",delta:"占比87.5%"},{value:"$1亿",label:"工具ARR",delta:"快速增长"},{value:"6个",label:"产品矩阵",delta:"完整闭环"},{value:"3个",label:"基座模型",delta:"全球领先"},{value:"+12.19%",label:"股价涨幅",delta:"07-02单日"}];document.getElementById("statsPanel").innerHTML=stats.map(s=>`<div class="stat-card"><div class="stat-value">${s.value}</div><div class="stat-label">${s.label}</div>${s.delta?`<div class="stat-delta">${s.delta}</div>`:""}</div>`).join("")}
+function getFilteredData(){let data=tiangongData;if(currentFilter!=="all")data=data.filter(d=>d.category===currentFilter);if(searchQuery)data=data.filter(d=>d.title.toLowerCase().includes(searchQuery.toLowerCase())||d.desc.toLowerCase().includes(searchQuery.toLowerCase())||d.tags.some(t=>t.toLowerCase().includes(searchQuery.toLowerCase())));return data}
+function renderContent(){const data=getFilteredData();const content=document.getElementById("content");if(data.length===0){content.innerHTML='<div class="empty-state"><div class="empty-state-icon">🔍</div><div>没有找到匹配的项目</div></div>';return}document.querySelector(".card-grid")&&(document.querySelector(".card-grid").style.display="none");document.querySelector(".timeline-view")&&(document.querySelector(".timeline-view").style.display="none");document.querySelector(".table-view")&&(document.querySelector(".table-view").style.display="none");if(currentView==="card")renderCards(data);else if(currentView==="timeline")renderTimeline(data);else if(currentView==="table")renderTable(data)}
+function renderCards(data){const content=document.getElementById("content");content.innerHTML=`<div class="card-grid">${data.map(item=>`<div class="card" onclick="openModal(${item.id})"><div class="card-header"><div class="card-title">${item.title}</div><span class="card-badge ${categoryColors[item.category]}">${categories[item.category]}</span></div><div class="card-date">${item.date}</div><div class="card-desc">${item.desc}</div><div class="card-footer">${item.tags.map(t=>`<span class="card-tag">${t}</span>`).join("")}</div></div>`).join("")}</div>`}
+function renderTimeline(data){const content=document.getElementById("content");content.innerHTML=`<div class="timeline-view" style="display:block"><div class="timeline">${data.map(item=>`<div class="timeline-item"><div class="timeline-date">${item.date} · ${categories[item.category]}</div><div class="timeline-title">${item.title}</div><div class="timeline-desc">${item.desc}</div></div>`).join("")}</div></div>`}
+function renderTable(data){const content=document.getElementById("content");content.innerHTML=`<div class="table-view" style="display:block"><table><thead><tr><th>日期</th><th>标题</th><th>分类</th><th>描述</th><th>标签</th></tr></thead><tbody>${data.map(item=>`<tr onclick="openModal(${item.id})"><td>${item.date}</td><td>${item.title}</td><td><span class="table-badge ${categoryColors[item.category]}">${categories[item.category]}</span></td><td>${item.desc}</td><td>${item.tags.join(", ")}</td></tr>`).join("")}</tbody></table></div>`}
+function filterCategory(cat){currentFilter=cat;document.querySelectorAll(".filter-btn").forEach(btn=>{btn.classList.toggle("active",btn.dataset.filter===cat)});renderContent()}
+function handleSearch(query){searchQuery=query.trim();if(searchQuery){currentFilter="all";document.querySelectorAll(".filter-btn").forEach(btn=>btn.classList.toggle("active",btn.dataset.filter==="all"))}renderContent()}
+function switchView(view){currentView=view;document.querySelectorAll(".view-btn").forEach(btn=>{btn.classList.toggle("active",btn.dataset.view===view)});renderContent()}
+function openModal(id){const item=tiangongData.find(d=>d.id===id);if(!item)return;document.getElementById("modalTitle").textContent=item.title;document.getElementById("modalBody").innerHTML=`<div class="modal-section"><div class="modal-section-title">项目概述</div><div class="modal-section-content">${item.desc}</div></div><div class="modal-section"><div class="modal-section-title">关键信息</div><div class="modal-section-content"><ul>${item.keyInfo.map(k=>`<li>${k}</li>`).join("")}</ul></div></div><div class="modal-section"><div class="modal-section-title">核心亮点</div><div class="modal-section-content"><ul>${item.highlights.map(h=>`<li>${h}</li>`).join("")}</ul></div></div><div class="modal-section"><div class="modal-section-title">信息来源</div><div class="modal-section-content">${item.sources.map(s=>`<a href="${s.url}" target="_blank" class="modal-link">${s.title} ↗</a><br>`).join("")}</div></div>`;document.getElementById("modal").classList.add("active")}
+function closeModal(e){if(!e||e.target.id==="modal"||e.target.classList.contains("modal-close")){document.getElementById("modal").classList.remove("active")}}
+function bindEvents(){document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()})}
+init();
+</script>
+</body>
+</html>
